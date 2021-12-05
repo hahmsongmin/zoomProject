@@ -20,11 +20,18 @@ const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server });
 
+// 각 전달 받은 frontSocket을 push 해줘서 관리하면, 다른 모든 Socket에 전달해 줄 수 있음
+// 예를 들어 (브레이브 => , 파이어폭스 => ) 각각 frontsocket을 넣어줌
+const fakeSocketsDatabase = [];
+
 wss.on('connection', (frontSocket) => {
+  fakeSocketsDatabase.push(frontSocket);
   console.log('Connected to Browser ✅');
   frontSocket.on('close', () => console.log('disconneted to Browser ❌'));
-  frontSocket.on('message', (message) => console.log(message.toString('utf8')));
-  frontSocket.send('Hello!!');
+  frontSocket.on('message', (message) => {
+    const decordingMeg = message.toString('utf8');
+    fakeSocketsDatabase.forEach((eachSocket) => eachSocket.send(decordingMeg));
+  });
 });
 
 server.listen(PORT, logServer);
