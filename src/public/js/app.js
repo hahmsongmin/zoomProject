@@ -9,28 +9,28 @@ backSocket.addEventListener('open', () => {
 });
 
 backSocket.addEventListener('message', (message) => {
-  const data = JSON.parse(message.data);
+  const msg = message.data;
   const li = document.createElement('li');
-  li.textContent = `${data.type} : ${data.payload}`;
+  li.textContent = msg;
   messageList.append(li);
 });
 
 backSocket.addEventListener('close', () => console.log('disconnected from Server ❌'));
 
-messageForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const input = messageForm.querySelector('input');
-  backSocket.send(input.value);
-  input.value = '';
-});
+function makeMessage(type, payload) {
+  const msg = { type, payload };
+  return JSON.stringify(msg);
+}
 
 nickNameForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const input = nickNameForm.querySelector('input');
-  backSocket.send(
-    JSON.stringify({
-      type: 'nickname',
-      payload: input.value,
-    })
-  );
+  backSocket.send(makeMessage('nickname', input.value));
+});
+
+messageForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const input = messageForm.querySelector('input');
+  backSocket.send(makeMessage('new_message', input.value));
+  input.value = '';
 });

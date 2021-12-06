@@ -26,11 +26,21 @@ const fakeSocketsDatabase = [];
 
 wss.on('connection', (frontSocket) => {
   fakeSocketsDatabase.push(frontSocket);
+  frontSocket.nickname = 'anoy';
   console.log('Connected to Browser ✅');
   frontSocket.on('close', () => console.log('disconneted to Browser ❌'));
   frontSocket.on('message', (message) => {
-    const decordingMeg = message.toString('utf8');
-    fakeSocketsDatabase.forEach((eachSocket) => eachSocket.send(decordingMeg));
+    const decordingMeg = JSON.parse(message.toString('utf8'));
+    switch (decordingMeg.type) {
+      case 'new_message':
+        fakeSocketsDatabase.forEach((eachSocket) => {
+          eachSocket.send(`${frontSocket.nickname} : ${decordingMeg.payload}`);
+        });
+        break;
+      case 'nickname':
+        frontSocket.nickname = decordingMeg.payload;
+        break;
+    }
   });
 });
 
