@@ -32,5 +32,8 @@ messageForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const input = messageForm.querySelector('input');
   backSocket.send(makeMessage('new_message', input.value));
+  const li = document.createElement('li');
+  li.textContent = `You : ${input.value}`;
+  messageList.append(li);
   input.value = '';
 });

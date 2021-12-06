@@ -34,11 +34,15 @@ wss.on('connection', (frontSocket) => {
     switch (decordingMeg.type) {
       case 'new_message':
         fakeSocketsDatabase.forEach((eachSocket) => {
+          if (frontSocket.myCheck === eachSocket.nickname) {
+            return;
+          }
           eachSocket.send(`${frontSocket.nickname} : ${decordingMeg.payload}`);
         });
         break;
       case 'nickname':
         frontSocket.nickname = decordingMeg.payload;
+        frontSocket.myCheck = decordingMeg.payload;
         break;
     }
   });
