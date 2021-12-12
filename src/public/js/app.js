@@ -7,15 +7,26 @@ const room = document.getElementById('room');
 let roomName;
 room.hidden = true;
 
+function handleMessageSubmit(e) {
+  e.preventDefault();
+  const input = room.querySelector('input');
+  const save = input.value;
+  socket.emit('new_message', input.value, roomName, () => {
+    addMessage(`You : ${save}`);
+  });
+  input.value = '';
+}
+
 function showRoom() {
   const enterName = room.querySelector('h3');
   welcome.hidden = true;
   room.hidden = false;
   enterName.textContent = `방이름 : ${roomName}`;
+  const form = room.querySelector('form');
+  form.addEventListener('submit', handleMessageSubmit);
 }
 
 function addMessage(message) {
-  console.log(message);
   const ul = room.querySelector('ul');
   const li = document.createElement('li');
   li.textContent = message;
@@ -33,3 +44,9 @@ form.addEventListener('submit', (e) => {
 socket.on('welcome', () => {
   addMessage('someone joined');
 });
+
+socket.on('bye', () => {
+  addMessage('bye bye');
+});
+
+socket.on('new_message', addMessage);
