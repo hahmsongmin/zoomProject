@@ -18,11 +18,13 @@ const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
 wsServer.on('connection', (socket) => {
-  socket.on('enter_room', (msg, callback) => {
-    console.log(msg);
-    setTimeout(() => {
-      callback();
-    }, 2000);
+  socket.onAny((event) => {
+    console.log(`What is the roomName : ${event}`);
+  });
+  socket.on('enter_room', (roomName, callback) => {
+    socket.join(roomName);
+    callback();
+    socket.to(roomName).emit('welcome');
   });
 });
 
