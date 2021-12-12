@@ -25,15 +25,16 @@ wsServer.on('connection', (socket) => {
     socket.join(roomName);
     console.log(socket.rooms);
     callback();
-    socket.to(roomName).emit('welcome');
+    socket.to(roomName).emit('welcome', socket.nickname);
   });
   socket.on('new_message', (message, roomName, callback) => {
-    socket.to(roomName).emit('new_message', message);
+    socket.to(roomName).emit('new_message', `${socket.nickname} : ${message}`);
     callback();
   });
+  socket.on('nickname', (nickname) => (socket['nickname'] = nickname));
   socket.on('disconnecting', () => {
     socket.rooms.forEach((room) => {
-      socket.to(room).emit('bye');
+      socket.to(room).emit('bye', socket.nickname);
     });
   });
 });
