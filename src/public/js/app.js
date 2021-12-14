@@ -58,12 +58,28 @@ nickform.addEventListener('submit', (e) => {
   socket.emit('nickname', input.value);
 });
 
-socket.on('welcome', (user) => {
+socket.on('welcome', (user, newCount) => {
+  const enterName = room.querySelector('h3');
+  enterName.textContent = `방이름 : ${roomName} ⭐️   참가인원 : ${newCount}`;
   addMessage(`${user}님이 참가하였습니다.`);
 });
 
-socket.on('bye', (user) => {
+socket.on('bye', (user, newCount) => {
+  const enterName = room.querySelector('h3');
+  enterName.textContent = `방이름 : ${roomName} ⭐️  참가인원 : ${newCount}`;
   addMessage(`${user}님이 떠나셨습니다.`);
 });
 
 socket.on('new_message', addMessage);
+socket.on('room_change', (rooms) => {
+  const roomList = welcome.querySelector('ul');
+  roomList.innerHTML = '';
+  if (rooms.length === 0) {
+    return;
+  }
+  rooms.forEach((room) => {
+    const li = document.createElement('li');
+    li.textContent = room;
+    roomList.append(li);
+  });
+});
